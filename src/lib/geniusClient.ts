@@ -1,9 +1,15 @@
-import Genius from 'genius-lyrics'
-let cachedClient :Genius.Client | null = null
+import { Client as GeniusClient } from 'genius-lyrics';
 
-export function getGeniusClient() {
+let cachedClient: GeniusClient | null = null;
+
+export const getGeniusClient = (accessToken?: string): GeniusClient => {
   if (!cachedClient) {
-    cachedClient = new Genius.Client()
+    try {
+      cachedClient = new GeniusClient(accessToken);
+    } catch (error) {
+      console.error('Failed to create Genius client:', error);
+      throw new Error('Unable to initialize Genius client');
+    }
   }
-  return cachedClient
-}
+  return cachedClient;
+};
