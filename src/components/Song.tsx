@@ -28,7 +28,7 @@ const Song = ({ song }: { song: Song }) => {
           className="object-cover rounded-md"
         />
       </motion.div>
-      <div className="flex flex-col w-full gap-4">
+      <div className="flex flex-col w-full gap-2">
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
