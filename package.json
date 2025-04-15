@@ -20,7 +20,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.7.3",
-    "genius-lyrics": "^4.4.7",
     "lucide-react": "^0.488.0",
     "motion": "^12.7.2",
     "next": "15.3.0",
