@@ -54,6 +54,8 @@ export const searchSongs = cache(async () => {
 export const getLyrics = cache(async (songUrl: string) => {
   const response = await fetch(songUrl);
   if (!response.ok) { 
+    const body = response.body
+    console.error("Fetch failed", response.status, response.statusText, body);
     throw new Error("Failed to fetch lyrics", {cause : response.statusText});
   }
   const html = await response.text();
