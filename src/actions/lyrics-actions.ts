@@ -52,7 +52,13 @@ export const searchSongs = cache(async () => {
 
 
 export const getLyrics = cache(async (songUrl: string) => {
-  const response = await fetch(songUrl);
+  const response = await fetch(songUrl, {
+    headers: {
+      'User-Agent':
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
+        '(KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
+    },
+  });
   if (!response.ok) { 
     const body = response.body
     console.error("Fetch failed", response.status, response.statusText, body);
