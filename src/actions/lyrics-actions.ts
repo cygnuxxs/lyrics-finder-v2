@@ -1,7 +1,6 @@
 "use server";
 import { cookies } from "next/headers";
 import { cache } from "react";
-import {load} from 'cheerio'
 
 export const searchSongs = cache(async () => {
   const songName = (await cookies()).get("songName");
@@ -51,54 +50,69 @@ export const searchSongs = cache(async () => {
 })
 
 
-export const getLyrics = cache(async (songUrl: string) => {
-  const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(songUrl);
-  const response = await fetch(proxyUrl);
-  if (!response.ok) { 
+// export const getLyrics = cache(async (songUrl: string) => {
+//   const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(songUrl);
+//   const response = await fetch(proxyUrl);
+//   if (!response.ok) { 
+//     const body = response.body
+//     console.error("Fetch failed", response.status, response.statusText, body);
+//     throw new Error("Failed to fetch lyrics", {cause : response.statusText});
+//   }
+//   const html = await response.text();
+//   const $ = load(html);
+
+//   const lyricsContainers = $('div[class*="Lyrics__Container"]');
+//   lyricsContainers.find('div[class*="RightSidebar__"]').remove();
+//   lyricsContainers.find('button').remove();
+
+//   const lyrics = lyricsContainers
+//     .map((_, container) => {
+//       const $container = $(container);
+//       let sectionText = '';
+      
+//       $container.contents().each((_, el) => {
+//         // Handle different node types safely
+//         if (el.type === 'text') {
+//           sectionText += $(el).text().trim() + '\n';
+//         }
+//         // Check if it's an element node first
+//         else if (el.type === 'tag') {
+//           const $el = $(el);
+//           if (el.tagName.toLowerCase() === 'br') {
+//             sectionText += '\n';
+//           }
+//           else if ($el.is('a')) {
+//             sectionText += $el.text().trim();
+//           }
+//         }
+//       });
+      
+//       return sectionText.replace(/^\n+|\n+$/g, '');
+//     })
+//     .get()
+//     .join('\n\n');
+
+//   if (!lyrics.trim()) {
+//     throw new Error("Lyrics not found");
+//   }
+
+//   return lyrics;
+// });
+
+export const getLyrics = cache(async (songName : string, artistName : string) => {
+  const api =`https://api.lyrics.ovh/v1/${artistName}/${songName}`;
+  const response = await fetch(api);
+  if (!response.ok) {
     const body = response.body
     console.error("Fetch failed", response.status, response.statusText, body);
     throw new Error("Failed to fetch lyrics", {cause : response.statusText});
   }
-  const html = await response.text();
-  const $ = load(html);
-
-  const lyricsContainers = $('div[class*="Lyrics__Container"]');
-  lyricsContainers.find('div[class*="RightSidebar__"]').remove();
-  lyricsContainers.find('button').remove();
-
-  const lyrics = lyricsContainers
-    .map((_, container) => {
-      const $container = $(container);
-      let sectionText = '';
-      
-      $container.contents().each((_, el) => {
-        // Handle different node types safely
-        if (el.type === 'text') {
-          sectionText += $(el).text().trim() + '\n';
-        }
-        // Check if it's an element node first
-        else if (el.type === 'tag') {
-          const $el = $(el);
-          if (el.tagName.toLowerCase() === 'br') {
-            sectionText += '\n';
-          }
-          else if ($el.is('a')) {
-            sectionText += $el.text().trim();
-          }
-        }
-      });
-      
-      return sectionText.replace(/^\n+|\n+$/g, '');
-    })
-    .get()
-    .join('\n\n');
-
-  if (!lyrics.trim()) {
+  const data = await response.json();
+  if (data.error) {
     throw new Error("Lyrics not found");
   }
-
-  return lyrics;
-});
+  return data.lyrics;
+})
 
 export async function storeSongCookie(formData : FormData) {
   const songName = formData.get('songName') as string;

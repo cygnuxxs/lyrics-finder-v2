@@ -16,7 +16,7 @@ const LyricDialog = ({ song }: { song: Song }) => {
     if (lyrics) return
     setIsLoading(true)
     try {
-      const fetchedLyrics = await getLyrics(song.url)
+      const fetchedLyrics = await getLyrics(song.title, song.artistName)
       setLyrics(fetchedLyrics)
     } catch (error) {
       console.error('Failed to fetch lyrics:', error)
