@@ -1,9 +1,10 @@
 "use server";
 import { getGeniusClient } from "@/lib/geniusClient";
 import { cookies } from "next/headers";
+import { cache } from "react";
 const geniusClient = getGeniusClient();
 
-export async function searchSongs() {
+export const searchSongs = cache(async () => {
   const songName = (await cookies()).get("songName");
   if (!songName) {
     console.log("No songName cookie found");
@@ -33,12 +34,12 @@ export async function searchSongs() {
     }
     return [];
   }
-}
-export async function getLyrics(songUrl: string) {
+})
+export const getLyrics = cache(async (songUrl: string) => {
   const response = await geniusClient.songs.scrape(songUrl)
   const lyrics = response.lyrics()
   return lyrics;
-}
+})
 
 export async function storeSongCookie(formData : FormData) {
   const songName = formData.get('songName') as string;
