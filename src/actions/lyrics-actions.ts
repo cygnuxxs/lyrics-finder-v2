@@ -3,15 +3,16 @@ import { getGeniusClient } from "@/lib/geniusClient";
 import { cookies } from "next/headers";
 const geniusClient = getGeniusClient();
 
-// const delay = (ms : number) => new Promise((resolve) => setTimeout(resolve, ms))
 export async function searchSongs() {
   const songName = (await cookies()).get("songName");
   if (!songName) {
     console.log("No songName cookie found");
     return null;
   }
+  console.log(songName.value);
   try {
     const response = await geniusClient.songs.search(songName.value);
+    console.log(response);
     const songs = response.map((song) => ({
       songId: song.id,
       title: song.title,
